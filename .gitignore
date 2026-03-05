@@ -5,8 +5,8 @@ data/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
-*.csv
-*.parquet
+data/**/*.csv
+data/**/*.parquet
 
 # Python cache
 __pycache__/
