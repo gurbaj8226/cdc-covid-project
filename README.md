@@ -21,6 +21,17 @@ The full dataset contains **~106 million rows**, which is too large for local an
 
 Instead, a **1,000,000 row sample** was retrieved using the **Socrata API** and stored locally as a **Parquet file** for efficient processing.
 
+The CDC COVID-19 Case Surveillance dataset is downloaded through the Socrata API.
+
+**Large datasets are not stored in this repository.**
+
+To reproduce the dataset:
+
+1. Run `notebooks/01_data_acquisition_cleaning_q1.ipynb`
+2. The notebook downloads the CDC dataset and saves a cleaned sample to:
+
+data/processed/cdc_clean_1M.parquet
+
 ---
 
 # Columns Used
