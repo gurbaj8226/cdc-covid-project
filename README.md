@@ -1,191 +1,77 @@
-```markdown
-# CDC COVID-19 Severity Analysis (Python / Pandas)
+# CDC COVID-19 Severe Outcomes Analysis
 
-This project analyzes severe COVID-19 outcomes using the **CDC COVID-19 Case Surveillance Public Use Dataset**.
+A Python data analysis project exploring how **demographics and underlying medical conditions relate to severe COVID-19 outcomes** using the CDC Case Surveillance Public Use dataset.
 
-Understanding factors associated with severe COVID outcomes is important for **public health planning, hospital capacity management, and identifying vulnerable populations**.
+This project demonstrates a complete **data analytics workflow** including:
 
-The analysis focuses on how **hospitalization, ICU admission, and death outcomes vary across demographics and underlying medical conditions**.
+* API data acquisition
+* data cleaning and preprocessing
+* exploratory analysis
+* severity rate calculations
+* data visualization
+* interpretation of results
 
-The project demonstrates a complete **data analysis workflow** including:
-
-- API data acquisition
-- data cleaning and preprocessing
-- outcome rate calculations
-- exploratory severity analysis
-- risk factor comparison
+The analysis was performed using **Python, Pandas, and Matplotlib** within Jupyter notebooks.
 
 ---
 
-# Results Snapshot
+# Executive Summary
 
-Analysis of a **1 million case sample** from the CDC Case Surveillance dataset shows strong differences in severe COVID outcomes based on underlying medical conditions.
+Using a **1 million case sample** from the CDC COVID-19 Case Surveillance dataset, this project analyzes how severe COVID outcomes vary across demographic groups and underlying medical conditions.
 
-| Outcome | With Medical Conditions | Without Medical Conditions |
-|------|------|------|
-| Hospitalization | 14.71% | 2.87% |
-| ICU Admission | 10.14% | 1.78% |
-| Death | 2.32% | 0.24% |
+The analysis focuses on three key outcomes:
 
-Patients with underlying medical conditions were approximately:
+* **Hospitalization**
+* **ICU admission**
+* **Death**
 
-• **5× more likely to be hospitalized**  
-• **5–6× more likely to require ICU care**  
-• **~10× more likely to die**
+Key findings from the dataset sample:
 
----
+* Cases with **reported underlying medical conditions** show substantially higher rates of hospitalization, ICU admission, and death.
+* Severe outcome rates increase across **older age groups within the available sample**.
+* Properly handling **missing outcome values** is essential; including unknown outcomes in denominators can significantly underestimate severity rates.
 
-# Dataset
-
-Source:  
-CDC COVID-19 Case Surveillance Public Use Data  
-
-https://data.cdc.gov
-
-Dataset ID:
-
-```
-
-vbim-akqf
-
-```
-
-The full dataset contains approximately **106 million rows**, which is too large for efficient local analysis on most machines.
-
-Instead, this project retrieves a **1,000,000 row sample** using the **Socrata Open Data API** and stores it locally as a **Parquet file** for efficient processing.
-
-Large raw datasets are **not stored in this repository**.
-
-To reproduce the dataset:
-
-1. Run:
-
-```
-
-notebooks/01_data_acquisition_cleaning_q1.ipynb
-
-```
-
-2. The notebook downloads data from the CDC API and saves a cleaned dataset to:
-
-```
-
-data/processed/cdc_clean_1M.parquet
-
-````
-
----
-
-# Columns Used
-
-The analysis focuses on the following variables:
-
-| Column | Description |
-|------|-------------|
-| `cdc_report_dt` | Date the case was reported to the CDC |
-| `age_group` | Age category of the case |
-| `sex` | Reported sex |
-| `race_ethnicity_combined` | Combined race/ethnicity classification |
-| `hosp_yn` | Whether the case was hospitalized |
-| `icu_yn` | Whether the case required ICU admission |
-| `death_yn` | Whether the case resulted in death |
-| `medcond_yn` | Presence of underlying medical conditions |
-| `current_status` | Case classification (confirmed or probable) |
-
-Each row represents a **de-identified patient case** reported to the CDC.
-
----
-
-# Data Cleaning
-
-The following preprocessing steps were applied:
-
-1. Converted `cdc_report_dt` from string to datetime  
-2. Created a monthly aggregation variable `case_month`  
-3. Filtered the dataset to include only:
-   - Laboratory-confirmed cases
-   - Probable cases  
-4. Preserved `"Missing"` and `"Unknown"` outcome values for transparency  
-5. Created filtered subsets when calculating rates so that denominators only include **known outcome values**
-
-Example preprocessing code:
-
-```python
-df_clean = df.copy()
-
-df_clean["cdc_report_dt"] = pd.to_datetime(
-    df_clean["cdc_report_dt"], errors="coerce"
-)
-
-df_clean["case_month"] = (
-    df_clean["cdc_report_dt"]
-    .dt.to_period("M")
-    .astype(str)
-)
-
-df_clean = df_clean[
-    df_clean["current_status"].isin(
-        ["Laboratory-confirmed case", "Probable Case"]
-    )
-]
-````
-
----
-
-# Analysis Pipeline
-
-```
-CDC API
-   ↓
-Data Acquisition (Notebook 1)
-   ↓
-Data Cleaning / Feature Creation
-   ↓
-Severity Analysis
-   • Hospitalization
-   • ICU Admission
-   • Death
-   ↓
-Risk Factor Analysis
-   • Underlying Medical Conditions
-```
-
----
-
-# Analysis Workflow
-
-The project is organized into several notebooks:
-
-| Notebook                                | Purpose                                                    |
-| --------------------------------------- | ---------------------------------------------------------- |
-| `01_data_acquisition_cleaning_q1.ipynb` | Download and clean CDC case surveillance data              |
-| `02_hospitalization_analysis.ipynb`     | Calculate hospitalization rates by age group               |
-| `03_icu_analysis.ipynb`                 | Analyze ICU admission patterns                             |
-| `04_death_analysis.ipynb`               | Calculate death rates across demographic groups            |
-| `05_risk_factor_analysis.ipynb`         | Compare severity outcomes by underlying medical conditions |
-
-Each notebook produces summary tables and visualizations stored in the **outputs** directory.
+The project demonstrates how real-world public health datasets can be analyzed using reproducible Python workflows.
 
 ---
 
 # Example Visualization
 
+Severe Outcomes by Medical Condition
+
 ![Severity by Medical Condition](outputs/severity_by_medical_condition.png)
 
-This chart compares hospitalization, ICU admission, and death rates for cases **with and without underlying medical conditions**.
+This chart compares hospitalization, ICU admission, and death rates for cases with and without underlying medical conditions.
+
+Additional charts generated in this project include:
+
+* hospitalization rate by age group
+* ICU admission rate by age group
+* death rate by age group
+* severe outcome rates by underlying medical conditions
+
+All figures are generated using **Matplotlib** and exported to the `outputs` directory.
 
 ---
 
-# Key Limitation
+# Dataset
 
-Many outcome variables contain large shares of `"Missing"` or `"Unknown"` values.
+Source:
 
-For example, the underlying medical condition variable in the sample dataset contains approximately:
+CDC COVID-19 Case Surveillance Public Use Data
+[https://data.cdc.gov/Case-Surveillance/COVID-19-Case-Surveillance-Public-Use-Data/vbim-akqf](https://data.cdc.gov/Case-Surveillance/COVID-19-Case-Surveillance-Public-Use-Data/vbim-akqf)
 
-* Missing: ~80%
-* Unknown: ~9%
+The full dataset contains **tens of millions of case records**.
 
-Because the dataset was retrieved through **API pagination rather than random sampling**, the results should be interpreted as **exploratory analysis rather than population-level estimates**.
+To make the analysis manageable locally, this project retrieves a **1 million row sample** using the **Socrata Open Data API**.
+
+The cleaned dataset is stored locally as:
+
+```
+data/processed/cdc_clean_1M.parquet
+```
+
+Large raw datasets are intentionally **not stored in the repository**, but the pipeline for retrieving and cleaning the data is included in the notebooks.
 
 ---
 
@@ -194,22 +80,29 @@ Because the dataset was retrieved through **API pagination rather than random sa
 ```
 cdc-covid-project
 │
-├── data/
-│   └── processed/
-│       └── cdc_clean_1M.parquet
+├── data
+│   ├── raw
+│   │   └── .gitkeep
+│   └── processed
+│       └── .gitkeep
 │
-├── notebooks/
+├── notebooks
 │   ├── 01_data_acquisition_cleaning_q1.ipynb
 │   ├── 02_hospitalization_analysis.ipynb
 │   ├── 03_icu_analysis.ipynb
 │   ├── 04_death_analysis.ipynb
 │   └── 05_risk_factor_analysis.ipynb
 │
-├── outputs/
+├── outputs
 │   ├── hospitalization_by_age.csv
+│   ├── hospitalization_by_age.png
 │   ├── icu_by_age.csv
+│   ├── icu_by_age.png
 │   ├── death_by_age.csv
-│   └── severity_by_medical_condition.csv
+│   ├── death_by_age.png
+│   ├── hospitalization_by_medcond.csv
+│   ├── icu_by_medcond.csv
+│   └── death_by_medcond.csv
 │
 ├── README.md
 ├── requirements.txt
@@ -218,25 +111,153 @@ cdc-covid-project
 
 ---
 
-# Tools Used
+# Analysis Workflow
 
-* Python
-* pandas
-* NumPy
-* matplotlib
-* Jupyter Notebook
-* Socrata Open Data API
+The project follows a structured analytics pipeline.
+
+## 1 Data Acquisition
+
+Data is downloaded from the CDC Socrata API using Python.
+
+Pagination is used to retrieve a **1 million record sample** of the dataset.
 
 ---
 
-# Future Improvements
+## 2 Data Cleaning
 
-Potential extensions for this analysis include:
+Cleaning steps include:
 
-* analyzing the full CDC dataset using cloud compute
-* stratifying outcomes by vaccination period
-* building interactive dashboards for severity metrics
-* performing multivariate modeling of severity risk factors
+* converting report dates to datetime
+* creating a `case_month` variable
+* standardizing age group labels
+* filtering valid case statuses
+* removing invalid outcome values
+* preparing the dataset for downstream analysis
+
+The cleaned dataset is saved as a **Parquet file** for efficient analysis.
+
+---
+
+## 3 Outcome Analysis
+
+Three notebooks analyze each severe outcome separately.
+
+| Notebook | Analysis                          |
+| -------- | --------------------------------- |
+| 02       | Hospitalization rate by age group |
+| 03       | ICU admission rate by age group   |
+| 04       | Death rate by age group           |
+
+Each analysis:
+
+1. filters rows with **known outcome values**
+2. groups cases by **age group**
+3. calculates severity rates
+4. exports results as CSV tables
+5. generates visualizations
+
+---
+
+## 4 Risk Factor Analysis
+
+The final notebook evaluates how **underlying medical conditions affect severe outcomes**.
+
+The analysis compares hospitalization, ICU admission, and death rates between cases with and without reported medical conditions.
+
+This section acts as the **capstone analysis** of the project.
+
+---
+
+# Methodology
+
+Severity rates are calculated using **only known outcome values**.
+
+For example:
 
 ```
+hospitalization_rate =
+hospitalized_cases / cases_with_known_hospitalization_status
 ```
+
+Rows containing **Missing** or **Unknown** outcome values are excluded from denominators to avoid underestimating severity rates.
+
+---
+
+# Limitations
+
+The Socrata API returns rows in **database order**, not as a random sample.
+
+As a result:
+
+* the 1M row sample does not contain all possible age groups
+* some demographic groups may be underrepresented
+
+Therefore, the results should be interpreted as **exploratory analysis rather than population-level estimates**.
+
+---
+
+# Technologies Used
+
+Python
+Pandas
+Requests
+PyArrow
+Matplotlib
+Jupyter Notebook
+Git / GitHub
+
+---
+
+# Skills Demonstrated
+
+* API data retrieval using the **Socrata Open Data API**
+* Data cleaning and preprocessing using **Pandas**
+* Handling missing values and defining **analytical denominators**
+* Grouped aggregations and severity rate calculations
+* Data visualization using **Matplotlib**
+* Efficient dataset storage using **Parquet**
+* Reproducible analytics workflows using **Jupyter and Git**
+
+---
+
+# How to Run the Project
+
+Clone the repository:
+
+```
+git clone https://github.com/gurbaj8226/cdc-covid-project.git
+```
+
+Navigate to the project folder:
+
+```
+cd cdc-covid-project
+```
+
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+Run notebooks in order:
+
+```
+01_data_acquisition_cleaning_q1.ipynb
+02_hospitalization_analysis.ipynb
+03_icu_analysis.ipynb
+04_death_analysis.ipynb
+05_risk_factor_analysis.ipynb
+```
+
+---
+
+# Author
+
+Gurbaj Singh
+Computer Science Student
+
+GitHub
+[https://github.com/gurbaj8226](https://github.com/gurbaj8226)
+
+---
