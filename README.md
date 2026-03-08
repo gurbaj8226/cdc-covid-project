@@ -17,7 +17,7 @@ The analysis was performed using **Python, Pandas, and Matplotlib** within Jupyt
 
 # Executive Summary
 
-Using a **1 million case sample** from the CDC COVID-19 Case Surveillance dataset, this project analyzes how severe COVID outcomes vary across demographic groups and underlying medical conditions.
+Using a **1 million case sample** from the CDC COVID-19 Case Surveillance dataset, this project analyzes how severe COVID outcomes vary across age groups and underlying medical conditions.
 
 The analysis focuses on three key outcomes:
 
